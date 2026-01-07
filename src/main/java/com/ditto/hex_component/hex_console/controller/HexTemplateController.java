@@ -1,6 +1,7 @@
 package com.ditto.hex_component.hex_console.controller;
 
-import com.aliyuncs.utils.StringUtils;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ditto.hex_component.hex_console.entity.HexTemplate;
 import com.ditto.hex_component.hex_console.service.HexTemplateCellService;
 import com.ditto.hex_component.hex_console.service.HexTemplateFileCheck;
@@ -11,15 +12,15 @@ import com.ditto.hex_component.hex_util.oss.OSSUtil;
 import com.ditto.hex_component.hex_util.request.ExportFileResponseUtil;
 import com.ditto.hex_component.hex_util.request.ImportFileMultipartUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @RestController
-@RequestMapping("/ExTemplateController")
+@RequestMapping("/ExTemplateConsole")
 public class HexTemplateController {
 
     @Autowired
@@ -29,11 +30,21 @@ public class HexTemplateController {
     private HexTemplateCellService hexTemplateCellService;
 
     @RequestMapping("/initExTemplate")
-    public void  initExTemplate (HexTemplate exTemplate){
+    public void  initExTemplate (@RequestBody HexTemplate exTemplate){
         if (StringUtils.isEmpty(exTemplate.getTemplateCode())){
             throw  new HexException(HexExceptionEnum.TEMP_CODE_NULL);
         }
         hexTemplateService.initExTemplate(exTemplate);
+    }
+
+
+    @RequestMapping("/selectExTemplate")
+    public List<HexTemplate> selectExTemplate (String select){
+         LambdaQueryWrapper<HexTemplate> lambdaQueryWrapper = new LambdaQueryWrapper();
+        if (StringUtils.hasText(select)) {
+            lambdaQueryWrapper.like(HexTemplate::getTemplateCode, select).or().like(HexTemplate::getTemplateName, select);
+        }
+        return hexTemplateService.list(lambdaQueryWrapper);
     }
 
     @RequestMapping("/uploadExTemplate/{templateCode}")

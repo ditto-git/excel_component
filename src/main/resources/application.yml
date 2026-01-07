@@ -17,14 +17,16 @@ logging:
 
 mybatis-plus:
   type-aliases-package: com.ditto.hex_component.hex_console.entity
+  mapper-locations: classpath*:/mapper/*.xml
   configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     call-setters-on-nulls: true
 
 
 
 
 
-  mapper-locations: classpath*:/mapper/*.xml
+
 
 
 
