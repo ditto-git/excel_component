@@ -16,7 +16,7 @@ logging:
     com.ditto.hex.hex_console.mapper: debug
 
 mybatis-plus:
-  type-aliases-package: com.ditto.hex_component.hex_console.entity
+  type-aliases-package: com.ditto.tex_component.tex_console.entity
   mapper-locations: classpath*:/mapper/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
