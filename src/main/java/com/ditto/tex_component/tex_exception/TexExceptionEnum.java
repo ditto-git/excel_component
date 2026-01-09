@@ -15,6 +15,7 @@ public enum TexExceptionEnum {
 
 
     TEMP_CODE_NULL(773324,"模板编码不能为空"),
+    CELL_CODE_NULL(773325,"字段编码不能为空"),
     FILE_EXPORT_ERROR(230301, "文件导出失败,请联系管理员");
 
 

@@ -74,11 +74,12 @@ public class TexTemplateController {
     @RequestMapping("/selectExTemplate")
     public List<TexTemplate> selectExTemplate (String select){
         LambdaQueryWrapper<TexTemplate> lambdaQueryWrapper = new LambdaQueryWrapper();
-        if (StringUtils.hasText(select)) {
-            lambdaQueryWrapper.like(TexTemplate::getTemplateCode, select).or().like(TexTemplate::getTemplateName, select);
-        }
-
         lambdaQueryWrapper.in(TexTemplate::getTemplateStatus, Arrays.asList(MAINTAIN, USE));
+        if (StringUtils.hasText(select)) {
+            lambdaQueryWrapper.and(queryWrapper -> {
+                queryWrapper.like(TexTemplate::getTemplateCode, select).or().like(TexTemplate::getTemplateName, select);
+            });
+        }
         return texTemplateService.list(lambdaQueryWrapper);
     }
 
@@ -107,19 +108,38 @@ public class TexTemplateController {
     }
 
     @RequestMapping("/exTemplateInfo")
-    public List<TexTemplateCell>  exTemplateInfo(@RequestBody TexTemplate texTemplate)  {
-        if (StringUtils.isEmpty(texTemplate.getTemplateCode())){
+    public List<TexTemplateCell>  exTemplateInfo(@RequestBody TexTemplateCell texTemplateCell)  {
+        if (StringUtils.isEmpty(texTemplateCell.getTemplateCode())){
             throw  new TexException(TexExceptionEnum.TEMP_CODE_NULL);
         }
-       return texTemplateCellService.lambdaQuery().eq(TexTemplateCell::getTemplateCode, texTemplate.getTemplateCode()).list();
+        LambdaQueryWrapper<TexTemplateCell> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(TexTemplateCell::getTemplateCode, texTemplateCell.getTemplateCode());
+        if (StringUtils.hasText(texTemplateCell.getCellCode())) {
+            lambdaQueryWrapper.and(queryWrapper -> {
+                queryWrapper.like(TexTemplateCell::getCellCode, texTemplateCell.getCellCode())
+                        .or().like(TexTemplateCell::getCellProperty, texTemplateCell.getCellProperty())
+                        .or().like(TexTemplateCell::getHeadContent, texTemplateCell.getHeadContent());
+
+
+            });
+        }
+        return texTemplateCellService.list(lambdaQueryWrapper);
+    }
+
+    @RequestMapping("/updateExTemplateCell")
+    public void updateExTemplate(@RequestBody TexTemplateCell texTemplateCell)  {
+        if (StringUtils.isEmpty(texTemplateCell.getTemplateCode())){
+            throw  new TexException(TexExceptionEnum.CELL_CODE_NULL);
+        }
+         texTemplateCellService.updateById(texTemplateCell);
     }
 
 
-    @RequestMapping("/exportExCells")
-    public void exportExTemplateCell(HttpServletResponse response, String templateCode)throws Exception {
-        texTemplateCellService.exportExTemplateCell(new ExportFileResponseUtil(response,templateCode,"xlsx"));
+    @RequestMapping("/downloadExCells")
+    public void exportExTemplateCell(@RequestBody TexTemplateCell texTemplateCell,HttpServletResponse response)throws Exception {
+        texTemplateCellService.exportExTemplateCell(new ExportFileResponseUtil(response,texTemplateCell.getTemplateCode(),"xlsx"));
     }
-    @RequestMapping("/importExCells")
+    @RequestMapping("/uploadExCells")
     public void importExTemplateCell(MultipartHttpServletRequest request) throws Exception {
         ImportFileMultipartUtil multipart = new ImportFileMultipartUtil(request, "file");
         texTemplateCellService.importExTemplateCell(multipart);
