@@ -16,5 +16,9 @@ public class TexConstants {
     public final static String USE="1";
     //删除
     public final static String DEL="2";
+    //导入默认参数
+    public final static String FILE_PARAM="file";
+    //导入默认类型
+    public final static String FILE_TYPE="xlsx";
 
 }
