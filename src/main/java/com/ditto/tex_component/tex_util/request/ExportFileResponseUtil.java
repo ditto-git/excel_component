@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import static com.ditto.tex_component.tex_console.constants.TexConstants.*;
 import static com.ditto.tex_component.tex_exception.TexExceptionEnum.TEMP_IO_ERROR;
 
 
@@ -36,7 +37,7 @@ public class ExportFileResponseUtil {
 
 
     public ExportFileResponseUtil(HttpServletResponse response,String suffix){
-        this.fileName = "file";
+        this.fileName = FILE_PARAM;
         this.suffix = suffix;
         this.response = response;
         ResponseBuilder(this.response,this.fileName,this.suffix);
@@ -44,8 +45,8 @@ public class ExportFileResponseUtil {
 
 
     public ExportFileResponseUtil(HttpServletResponse response){
-        this.fileName = "file";
-        this.suffix = "xlsx";
+        this.fileName = FILE_PARAM;
+        this.suffix = FILE_TYPE;
         this.response = response;
         ResponseBuilder(this.response,this.fileName,this.suffix);
     }
